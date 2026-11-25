@@ -30,12 +30,14 @@ def register_moderator_handlers(dp: Dispatcher, moderator_bot: Bot):
         
         processed_callbacks.add(cb_data)
 
-        # СТАЛО (рабочий вариант):
-original_html = callback.message.html_text or ""
-try:
-    text_to_publish = original_html.split("<pre>")[1].split("</pre>")[0]
-except IndexError:
-    text_to_publish = callback.message.text or ""
+        # Достаем текст из карточки
+        original_html = callback.message.html_text or ""
+        try:
+            # Ищем текст внутри тега <pre>...</pre>
+            text_to_publish = original_html.split("<pre>")[1].split("</pre>")[0]
+        except IndexError:
+            # Если тегов нет, берем просто текст
+            text_to_publish = callback.message.text or ""
 
         channel_post = (
             "📩 <b>ПОДСЛУШАНО ОЦ №7</b>\n\n"
@@ -49,7 +51,7 @@ except IndexError:
         except Exception as e:
             logger.error(f"Ошибка публикации: {e}")
             processed_callbacks.discard(cb_data)
-            await callback.answer("⚠️ Не удалось опубликовать. Проверь права бота в канале.", show_alert=True)
+            await callback.answer("⚠️ Не удалось опубликовать. Проверь, что бот админ в канале.", show_alert=True)
 
     @dp.callback_query(F.data.startswith("reject:"))
     async def reject_message(callback: CallbackQuery):
