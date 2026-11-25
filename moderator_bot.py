@@ -30,13 +30,12 @@ def register_moderator_handlers(dp: Dispatcher, moderator_bot: Bot):
         
         processed_callbacks.add(cb_data)
 
-        # Достаем текст из карточки
-        original_text = callback.message.text or ""
-        try:
-            text_to_publish = original_text.split("<pre>")[1].split("</pre>")[0]
-        except IndexError:
-            await callback.answer("Ошибка чтения текста.", show_alert=True)
-            return
+        # СТАЛО (рабочий вариант):
+original_html = callback.message.html_text or ""
+try:
+    text_to_publish = original_html.split("<pre>")[1].split("</pre>")[0]
+except IndexError:
+    text_to_publish = callback.message.text or ""
 
         channel_post = (
             "📩 <b>ПОДСЛУШАНО ОЦ №7</b>\n\n"
